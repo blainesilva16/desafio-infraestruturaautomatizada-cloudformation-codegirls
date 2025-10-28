@@ -77,7 +77,7 @@ O que esse template faz:
 - Usa parâmetros para ambiente (dev, staging, etc.), permitindo reutilização.
 - Está 100% compatível com o comando aws cloudformation deploy.
 
-## 📦 4. Empacotando e Implantando com a AWS CLI
+## 📦 3. Empacotando e Implantando com a AWS CLI
 
 Antes de implantar, você deve empacotar os artefatos (caso existam Lambdas, templates aninhados etc.)
 
@@ -106,3 +106,60 @@ aws cloudformation deploy \
   --parameter-overrides Environment=dev \
   --profile dev
 ```
+
+## 🧰 4. Diagnóstico e Gerenciamento
+
+Verifique o status das stacks:
+
+```bash
+aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE ROLLBACK_FAILED
+```
+
+Para visualizar eventos detalhados:
+
+```bash
+aws cloudformation describe-stack-events --stack-name my-infra-stack-dev
+```
+
+Se precisar excluir a stack:
+
+```bash
+aws cloudformation delete-stack --stack-name my-infra-stack-dev
+```
+
+## ✅ 5. Validação e Boas Práticas
+
+Use o cfn-lint para validar o template antes de implantar:
+
+```bash
+cfn-lint templates/main.yaml
+```
+
+## 🌍 6. Região da AWS
+
+Certifique-se de estar utilizando a mesma região configurada no seu perfil CLI.
+Exemplo: se o perfil dev foi criado na região de São Paulo (sa-east-1), verifique isso em:
+
+```bash
+aws configure list --profile dev
+```
+
+## 🧾 7. Resultados do Projeto
+
+Após a execução bem-sucedida do deploy:
+- Um bucket S3 será criado com o nome <account-id>-dev-lambda-example-bucket
+- Uma IAM Role chamada dev-lambda-execution-role será provisionada
+- Uma Lambda Function com nome dev-example-lambda será criada
+- Todos os recursos poderão ser visualizados no console AWS CloudFormation
+
+## 🔍 8. Próximos Passos
+
+No próximo repositório, será implementada a automação de tarefas com:
+- AWS Lambda Functions
+- Integração com S3
+- Permissões refinadas de execução via IAM Roles
+
+💬 Créditos
+
+Este projeto foi desenvolvido como parte de um estudo prático sobre infraestrutura como código (IaC) com AWS CloudFormation.
+Autora: [Blaine Silva]
