@@ -1,0 +1,23 @@
+name: deploy-cfn
+on:
+  push:
+    branches: [ main ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Install cfn-lint
+        run: pip install cfn-lint
+      - name: Lint templates
+        run: cfn-lint templates/*.yaml
+      - name: Package and deploy
+        run: |
+          aws cloudformation package --template-file templates/main.yaml --s3-bucket meu-bucket-artifacts --output-template-file packaged.yaml
+          aws cloudformation deploy --template-file packaged.yaml --stack-name my-infra-stack-prod --capabilities CAPABILITY_NAMED_IAM --parameter-overrides Environment=prod
